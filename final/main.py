@@ -5,7 +5,7 @@ from generator import *
 
 tax_bracket = {
     'charity': 0,
-    'luxury': 18,
+    'luxury': 25,
     'collectibles': 20,
     'fine_art': 15,
     'digital_art': 10,
@@ -30,62 +30,58 @@ def f1(): #bill a list
     L = repeated_qr()
     print(L)
     for item in L:
-        a = True
-        while a:
-            with open('db.txt','r') as f:
+        with open('db.txt','r') as f:
+            a = True
+            while a:
                 a = f.readline()
                 a = a.strip()
-                a = eval(a)
-                print(a)
-                if str(a[0]) == item:
-                    bill.append(a)
-                    print('found')
-
-
+                if a:
+                    a = eval(a)
+                    print(a)
+                    if int(a[0]) == item:
+                        bill.append(a)
+                        break
+                else: break
+    print('printing bill')
+    print(bill)
 def f2():
     with open('db.txt','r') as f:
-        t = True
-        c = 0
-        while t:
-            try:
-                t = f.readline()
-                t = t.replace('\n','')
-                if not t: raise ZeroDivisionError
-                if c: print(t)
-                c+=1
-            except:
-                pass
+        c = f.read()
+        print(c)
 
 def f3():
-    p = input('Enter product name: ')
+    p = input('Enter product name to search: ')
     p = p.lower()
     with open('db.txt','r') as f:
         t = True
-        c = 0
+        found = False
         while t:
             try:
                 t = f.readline()
                 t = t.replace('\n','')
                 if not t: raise ZeroDivisionError
-                if p in t:
+                if p in t.lower():
                     print(t)
-                c+=1
+                    found = True
+                    break
             except:
                 pass
+        if not found: print(f'Could not find {p} in database.')
+
 def f4():
-    print('Executing 4')
     with open('db.txt','r') as f:
-        t = True
-        while t:
-            try:
-                t = f.readline()
-                t = t.replace('\n','')
-                if not t: raise ZeroDivisionError
-                print(t)
-                t_old = t
-            except:
-                t = eval(t_old)
-                l_id = t[0]
+        c = '['
+        l = True
+        while l:
+            l = f.readline()
+            c += l
+            c += ','
+        c = c.removesuffix(',,')
+        c += ']'
+        c = c.replace('\n','')
+        c = eval(c)
+        lastid = c[-1][0]
+
     with open('db.txt','a') as f:
         while True:
             try:
@@ -93,9 +89,8 @@ def f4():
                 break
             except:
                 print('Not a valid number.')
+        iden = int(lastid) + 1
         for i in range(1,n+1):
-            l_id += 1
-            iden = l_id
             name = input(f'Enter name of product {i}: ').lower()
             category = None
             check = list(tax_bracket.keys())
@@ -105,7 +100,7 @@ def f4():
                 category = input('Enter category of product: ').lower()
             while True:
                 try:
-                    price = int(input('Enter price of product: '))
+                    price = float(input('Enter price of product: '))
                     break
                 except:
                     print('Invalid.')
@@ -113,10 +108,39 @@ def f4():
             print('Enter Comment(Multiline,type ; and press Enter to exit):')
             while ';' not in comment:
                 comment += input()
+                comment += '\n'
+            comment = comment.replace('\n;','')
+            comment = comment.replace(';','')
             tax = tax_bracket[category]*(price/100)
-            print(tax)
-            DB_list = [iden,name,category,tax,price,comment]
-            f.write(DB_list)
+            DB_list = f"['{iden}','{name}','{category}','{tax}','{price}','{comment}']"
+            f.write('\n'+DB_list)
+            print(f'{DB_list} added with ID.')
+            iden += 1
+
+def f6():
+    p = input('Enter product name to remove: ')
+    p = p.lower()
+    with open('db.txt','r') as f:
+        t = True
+        found = False
+        while t:
+            try:
+                t = f.readline()
+                if not t: raise ZeroDivisionError
+                if p in t.lower():
+                    with open('db.txt','r') as f:
+                        c = f.read()
+                        c = c.replace(t,'')
+                    with open('db.txt','w') as f:    #PROCEED WITH CAUTION
+                        f.write(c)
+                    t = t.replace('\n','')
+                    print(t,'was removed.')
+                    found = True
+                    break
+            except:
+                pass
+        if not found: print(f'Could not find {p} in database.')
+    #print(f'Product \n{} with details\n{}\ndeleted.')
 
 def f7():
     print('The following is the percentages for taxes:')

@@ -1,5 +1,6 @@
-['id','name','category','tax','price','comment']
 ['0','samplename1','sampletype','50','999','thisisacomment']
 ['1','samplename2','sampletype','50','999','thisisacomment']
 ['2','samplename3','sampletype','50','999','thisisacomment']
 ['3','samplename4','sampletype','50','999','thisisacomment']
+['4','suryansh','charity','0.0','5000','This is a masterpiece.']
+['5','idkproduct','collectibles','80000.0','400000','idk what to say broits great']

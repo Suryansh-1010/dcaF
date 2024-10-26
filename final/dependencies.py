@@ -1,7 +1,7 @@
 import os
 
 def install():
-    L = ['pyqrcode','opencv-python','pyzbar']
+    L = ['pyqrcode','opencv-python','pyzbar','pypng']
     for i in L:
         os.system(f'pip install {i}')
 
@@ -10,6 +10,7 @@ def check():
         import pyqrcode
         import cv2
         import pyzbar
+        #import pypng
     except:
         install()
 
