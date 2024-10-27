@@ -28,7 +28,6 @@ Your Input: '''
 def f1(): #bill a list
     bill = []
     L = repeated_qr()
-    print(L)
     for item in L:
         with open('db.txt','r') as f:
             a = True
@@ -37,13 +36,19 @@ def f1(): #bill a list
                 a = a.strip()
                 if a:
                     a = eval(a)
-                    print(a)
                     if int(a[0]) == item:
                         bill.append(a)
                         break
                 else: break
     print('printing bill')
-    print(bill)
+    print('S.no. Name         cost')
+    check1 = True
+    for item in bill:
+        print(f'{item[0]}. {item[1]}   {item[3]+item[4]}')
+        check1 = False
+    if check1:
+        print('no items identified.')
+
 def f2():
     with open('db.txt','r') as f:
         c = f.read()
@@ -91,7 +96,13 @@ def f4():
                 print('Not a valid number.')
         iden = int(lastid) + 1
         for i in range(1,n+1):
-            name = input(f'Enter name of product {i}: ').lower()
+            with open('db.txt','r') as j:
+                while True:
+                    name = input(f'Enter name of product: ')
+                    if name not in j.read():
+                        break
+                    else:
+                        print('Name already in database.')
             category = None
             check = list(tax_bracket.keys())
             print('check',check)
@@ -104,43 +115,85 @@ def f4():
                     break
                 except:
                     print('Invalid.')
-            comment = ''
-            print('Enter Comment(Multiline,type ; and press Enter to exit):')
-            while ';' not in comment:
-                comment += input()
-                comment += '\n'
-            comment = comment.replace('\n;','')
-            comment = comment.replace(';','')
+            comment = input('Enter Comment:')
             tax = tax_bracket[category]*(price/100)
             DB_list = f"['{iden}','{name}','{category}','{tax}','{price}','{comment}']"
             f.write('\n'+DB_list)
-            print(f'{DB_list} added with ID.')
+            print(f'{DB_list} added.')
             iden += 1
+
+def f5():
+    p = input('Enter product to modify: ')
+    c = ''
+    t = True
+    with open('db.txt','r') as f:
+        if p.lower() in f.read().lower():
+            with open('db.txt','r') as f:
+                while t:
+                    t = f.readline()
+                    if p.lower() not in t.lower():
+                        c+=t
+                    else:
+                        print('Current details: '+t)
+                        iden = int(t[2])
+                        print('Enter the modified details below.')
+                        with open('db.txt','r') as j:
+                            while True:
+                                name = input(f'Enter name of product: ')
+                                if name not in j.read():
+                                    break
+                                else:
+                                    print('Name already in database.')
+                        category = None
+                        check = list(tax_bracket.keys())
+                        print('check',check)
+                        while category not in list(tax_bracket.keys()):
+                            print(f'Available categories:\n{tax_bracket}')
+                            category = input('Enter category of product: ').lower()
+                        while True:
+                            try:
+                                price = float(input('Enter price of product: '))
+                                break
+                            except:
+                                print('Invalid.')
+                        comment = input('Enter Comment:')
+                        tax = tax_bracket[category]*(price/100)
+                        DB_list = f"['{iden}','{name}','{category}','{tax}','{price}','{comment}']"
+                        c+=f'{DB_list}'+'\n'
+            with open('db.txt','w') as f:
+                f.write(c)
+            print(f'{DB_list} added.')
+        else:
+            print(f'Product {p} not found.')
 
 def f6():
     p = input('Enter product name to remove: ')
     p = p.lower()
     with open('db.txt','r') as f:
         t = True
-        found = False
+        shift = False
+        c = ''
+        count = -1
         while t:
             try:
+                count+=1
                 t = f.readline()
                 if not t: raise ZeroDivisionError
                 if p in t.lower():
-                    with open('db.txt','r') as f:
-                        c = f.read()
-                        c = c.replace(t,'')
-                    with open('db.txt','w') as f:    #PROCEED WITH CAUTION
-                        f.write(c)
-                    t = t.replace('\n','')
-                    print(t,'was removed.')
-                    found = True
-                    break
+                    shift = True
+                    deleted = t
+                    continue
+                if not shift:
+                    c+=t
+                if shift:
+                    c+=t.replace(f"'{count}'",f"'{count-1}'")
             except:
                 pass
-        if not found: print(f'Could not find {p} in database.')
-    #print(f'Product \n{} with details\n{}\ndeleted.')
+        if shift:
+            with open('db.txt','w') as f:
+                f.write(c)
+        if not shift: print(f'Could not find {p} in database.')
+    print(f'Product\n{eval(deleted)[1]}\nwith details\n{deleted}deleted.')
 
 def f7():
     print('The following is the percentages for taxes:')
@@ -162,10 +215,9 @@ def f9():
 def main():
     while True:
         i = input(menu)
-        eval(f'f{i}()')
-        '''try:
+        try:
             eval(f'f{i}()')
         except Exception as e:
-            print('Debug: ',e)'''
+            print('Debug: ',e)
 
 main()

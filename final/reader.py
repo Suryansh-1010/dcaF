@@ -28,7 +28,7 @@ def repeated_qr():
     L = []
     while not check:
         i = input('''Select an option:
-1. Scan a qr code
+1. Scan a qr code or manually add product id
 2. exit
 Your Input: ''')
         if i == '1':
@@ -36,7 +36,7 @@ Your Input: ''')
             L.append(id)
             while True:
                 i = input('''Select an option:
-1. Scan another qr code
+1. Scan another qr code or manually add product id
 2. exit
 Your Input: ''')
                 if i == '1':
